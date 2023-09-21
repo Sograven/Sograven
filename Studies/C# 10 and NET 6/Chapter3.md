@@ -1,3 +1,49 @@
+# Chapter 03: Controlling Flow, Converting Types and Handling Exceptions
+
+## Table of contents
+- [Operating on variables](#operating-on-variables)
+- [Understanding selection statements](#understanding-selection-statements)
+- [Understanding iteration statements](#understanding-iteration-statements)
+- [Casting and converting between types](#casting-and-converting-between-types)
+- [Handling exceptions](#handling-exceptions)
+- [Checking for overflow](#checking-for-overflow)
+- [Practice](#practice)
+  - [Exercise 3.1](#exercise-31)
+  - [Exercise 3.2](#exercise-32)
+  - [Exercise 3.3](#exercise-33)
+  - [Exercise 3.4](#exercise-34)
+
+
+
+## Operating on variables
+
+
+
+
+## Understanding selection statements
+
+
+
+
+## Understanding iteration statements
+
+
+
+
+## Casting and converting between types
+
+
+
+
+## Handling exceptions
+
+
+
+
+## Checking for overflow
+
+
+
 ## Practice
 
 ### Exercise 3.1
@@ -36,3 +82,48 @@ The underscore represents the default return value.
 
 #### What interface must an object implement to be enumerated over by using the `foreach` statement?
 `IEnumerable` including all methods.
+
+
+### Exercise 3.2
+
+```csharp
+using static System.Console;
+
+int max = 500;
+checked
+{
+    for (byte i = 0; i < max; i++)
+    {
+        WriteLine(i);
+    }
+}
+```
+
+
+### Exercise 3.3
+
+```csharp
+using static System.Console;
+
+Write("Enter a number between 0 and 255: ");
+string? number = ReadLine();
+Write("Enter another number between 0 and 255: ");
+string? anotherNumber = ReadLine();
+
+try
+{
+    #nullable disable
+    byte dividend = byte.Parse(number);
+    byte divider = byte.Parse(anotherNumber);
+
+    int quotient = dividend / divider;
+
+    WriteLine($"{dividend} divided by {divider} is {quotient}");
+}
+catch (Exception e)
+{
+    WriteLine($"{e.GetType().Name}: {e.Message}");
+}
+```
+
+### Exercise 3.4
