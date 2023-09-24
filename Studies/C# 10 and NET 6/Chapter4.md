@@ -41,7 +41,7 @@ static void TimesTable(byte number)
     WriteLine();
 }
 ```
-> [!NOTE] If a function has one or more parameters where just passing the values may not provide enough meaning, then you can optionally specify the name of the parameter as well as its value.
+> If a function has one or more parameters where just passing the values may not provide enough meaning, then you can optionally specify the name of the parameter as well as its value.
 
 
 ### Writing a function that returns a value
@@ -184,7 +184,7 @@ static void RunFactorial()
   }
 }
 ```
-> [!NOTE] Recursion is clever, but it can lead to problems, such as a stack overflow due to too many function calls because memory is used to store data on every function call,and it eventually uses too much.\
+> Recursion is clever, but it can lead to problems, such as a stack overflow due to too many function calls because memory is used to store data on every function call,and it eventually uses too much.\
 > Iteration is a more practical, if less succinct, solution in languages such as C#.
 
 
