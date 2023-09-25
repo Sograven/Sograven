@@ -1,4 +1,4 @@
-# Chapter 04: Writing, Debugging and Testing Functions
+# [Chapter 04: Writing, Debugging and Testing Functions](Source/Chapter04/WritingFunctions.cs)
 
 ## Table of contents
 - [Writing functions](#writing-functions)
@@ -32,13 +32,13 @@ TimesTable(number: 64);
 
 static void TimesTable(byte number)
 {
-    WriteLine($"This is the {number} times table:");
-    for (int row = 1; row <= 12; row++)
-    {
-      WriteLine($"{row} x {number} = {row * number}");
-    }
+  WriteLine($"This is the {number} times table:");
+  for (int row = 1; row <= 12; row++)
+  {
+    WriteLine($"{row} x {number} = {row * number}");
+  }
 
-    WriteLine();
+  WriteLine();
 }
 ```
 > If a function has one or more parameters where just passing the values may not provide enough meaning, then you can optionally specify the name of the parameter as well as its value.
