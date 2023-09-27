@@ -8,7 +8,6 @@
   - [Calculating factorials with recursion](#calculating-factorials-with-recursion)
   - [Documenting functions with XML comments](#documenting-functions-with-xml-comments)
   - [Using lambdas in function implementations](#using-lambdas-in-function-implementations)
-- [Debugging during development](#debugging-during-development)
 - [Logging during development and runtime](#logging-during-development-and-runtime)
 - [Unit testing](#unit-testing)
 - [Throwing and catching exceptions in functions](#throwing-and-catching-exceptions-in-functions)
@@ -276,13 +275,78 @@ static void RunFibFunctional()
 ```
 
 
-## Debugging during development
-
-
-
 
 ## Logging during development and runtime
 
+No code is ever bug free, and during runtime unexpected errors can occur.\
+End users are notoriously bad at remembering, admitting to, and then accurately describing
+what they were doing when an error occurred, so you should not rely on them accurately
+providing useful information to reproduce the problem to understand what caused the
+problem and then fix it.
+Instead, you can instrument your code, which means _logging events of interest_.
+
+> Add code throughout your application to log what is
+happening, and especially when exceptions occur, so that you can review the
+logs and use them to trace the issue and fix the problem.
+
+
+### Understanding logging options
+
+.NET includes some built-in ways to instrument your code by adding logging capabilities.
+But logging is an area where third parties have created a rich ecosystem of powerful solutions
+that extend what Microsoft provides.\
+List of some logging frameworks:
+- **Apache log4net**
+- **NLog**
+- **Serilog**
+
+
+### Instrumenting with Debug and Trace
+
+The _Debug class_ is used to add logging that gets written only during development.
+
+The _Trace class_ is used to add logging that gets written during both development and
+runtime.
+
+The Debug and Trace classes write to any trace listener. A _trace listener_ is a type that can be configured to write output anywhere you like when the WriteLine method is called. There are several trace listeners provided by .NET, including one that outputs to the console, and you can even make your own by inheriting from the _TraceListener_ type.
+
+```csharp
+using System.Diagnostics;
+
+Debug.WriteLine("Debug says, I am watching!");
+Trace.WriteLine("Trace says, I am watching!");
+```
+
+### Configuring trace listeners
+```csharp
+Trace.Listeners.Add(new TextWriterTraceListener(
+    File.CreateText(Path.Combine(Environment.GetFolderPath(
+        Environment.SpecialFolder.DesktopDirectory), "log.txt"))));
+
+Trace.AutoFlush = true;
+```
+
+### Switching trace levels
+```csharp
+using Microsoft.Extensions.Configuration;
+
+ConfigurationBuilder builder = new();
+builder.SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+IConfigurationRoot configuration = builder.Build();
+
+TraceSwitch ts = new(
+    displayName: "PacktSwitch",
+    description: "This switch is set via a JSON config.");
+
+configuration.GetSection("PacktSwitch").Bind(ts);
+
+Trace.WriteLineIf(ts.TraceError, "Trace error");
+Trace.WriteLineIf(ts.TraceWarning, "Trace warning");
+Trace.WriteLineIf(ts.TraceInfo, "Trace information");
+Trace.WriteLineIf(ts.TraceVerbose, "Trace verbose");
+```
 
 
 
