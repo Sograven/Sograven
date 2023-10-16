@@ -373,8 +373,8 @@ Trace.WriteLineIf(ts.TraceVerbose, "Trace verbose");
 
 - _**Usage errors**_ are when a programmer misuses a function, typically by passing invalid values as parameters. They could be avoided by that programmer changing their code to pass valid values. Usage errors should all be fixed before production runtime.
 - _**Execution errors**_ are when something happens at runtime that cannot be fixed by writing «better» code. Execution errors can be split into:
-  - _Program errors_.\ Can be programmatically fixed by writing smart code.
-  - _System errors_.\ Often cannot be fixed programmatically.
+  - _Program errors_. Can be programmatically fixed by writing smart code.
+  - _System errors_. Often cannot be fixed programmatically.
 
 
 ### Commonly thrown exceptions in functions
