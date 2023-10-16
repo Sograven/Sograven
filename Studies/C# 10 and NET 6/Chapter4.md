@@ -15,6 +15,12 @@
   - [Switching trace levels](#switching-trace-levels)
 - [Unit testing](#unit-testing)
 - [Throwing and catching exceptions in functions](#throwing-and-catching-exceptions-in-functions)
+  - [Understanding usage errors and execution errors](#understanding-usage-errors-and-execution-errors)
+  - [Commonly thrown exceptions in functions](#commonly-thrown-exceptions-in-functions)
+  - [Understanding the call stack](#understanding-the-call-stack)
+  - [Where to catch exceptions](#where-to-catch-exceptions)
+  - [Implementing the tester-doer pattern](#implementing-the-tester-doer-pattern)
+  - [Problems with the tester-doer pattern](#problems-with-the-tester-doer-pattern)
 - [Practice](#practice)
   - [Exercise 4.1](#exercise-41)
   - [Exercise 4.2](#exercise-42)
@@ -321,6 +327,7 @@ Debug.WriteLine("Debug says, I am watching!");
 Trace.WriteLine("Trace says, I am watching!");
 ```
 
+
 ### Configuring trace listeners
 ```csharp
 Trace.Listeners.Add(new TextWriterTraceListener(
@@ -329,6 +336,7 @@ Trace.Listeners.Add(new TextWriterTraceListener(
 
 Trace.AutoFlush = true;
 ```
+
 
 ### Switching trace levels
 ```csharp
@@ -361,6 +369,155 @@ Trace.WriteLineIf(ts.TraceVerbose, "Trace verbose");
 
 ## Throwing and catching exceptions in functions
 
+### Understanding usage errors and execution errors
+
+- _**Usage errors**_ are when a programmer misuses a function, typically by passing invalid values as parameters. They could be avoided by that programmer changing their code to pass valid values. Usage errors should all be fixed before production runtime.
+- _**Execution errors**_ are when something happens at runtime that cannot be fixed by writing «better» code. Execution errors can be split into:
+  - _Program errors_.\ Can be programmatically fixed by writing smart code.
+  - _System errors_.\ Often cannot be fixed programmatically.
+
+
+### Commonly thrown exceptions in functions
+
+Very rarely should you define new types of exceptions to indicate usage errors. .NET already defines many that you should use.\
+When defining your own functions with parameters, your code should check the parameter values and throw exceptions if they have values that will prevent your function from properly functioning.\
+For example, if a parameter should not be `null`, throw `ArgumentNullException`. For other problems, throw `ArgumentException`, `NotSupportedException`, or `InvalidOperationException`. For any exception, include a message that describes the problem for whoever will have to read it:
+```csharp
+static void Withdraw(string accountName, decimal amount)
+{
+  if (accountName is null)
+  {
+    throw new ArgumentNullException(paramName: nameof(accountName));
+  }
+
+  if (amount < 0)
+  {
+    throw new ArgumentException(
+      message: $"{nameof(amount)} cannot be less than zero.");
+  }
+  ...
+}
+```
+> If a function cannot successfully perform its operation, you should consider that a function failure and report it by throwing an exception.
+
+You **should never** need to write a try-catch statement to catch these usage type errors. You want the application to terminate. These exceptions should cause the programmer who is calling the function to fix their code to prevent the problem. They should be fixed before production deployment. That does not mean that your code does not need to throw usage error type exceptions. _**You should—to force other programmers to call your functions correctly**_!
+
+
+### Understanding the call stack
+
+The `Main` method will call other methods, that call other methods, and so on, and these methods could be in the current project or in referenced projects and NuGet packages.\
+Class library:
+```csharp
+using static System.Console;
+
+namespace Packt;
+
+public class Calculator
+{
+  public static void Gamma()
+  {
+    WriteLine("In Gamma");
+    Delta();
+  }
+
+  private static void Delta()
+  {
+    WriteLine("In Delta");
+    File.OpenText("bad file path");
+  }
+}
+```
+Program:
+```csharp
+using Packt;
+
+using static System.Console;
+
+WriteLine("In Main");
+Alpha();
+
+static void Alpha()
+{
+  WriteLine("In Alpha");
+  Beta();
+}
+```
+The call stack is upside-down. Starting from the bottom, you see:
+- The first call is to the `Main` entry point function in the auto-generated Program class. This is where arguments are passed in as a `string` array.
+- The second call is to the `Alpha` function.
+- The third call is to the `Beta` function.
+- The fourth call is to the `Gamma` function.
+- The fifth call is to the `Delta` function. This function attempts to open a file by passing a bad file path. This causes an exception to be thrown. Any function with a try-catch statement could catch this exception. If they do not, it is automatically passed up the call stack until it reaches the top, where .NET outputs the exception (and the details of this call stack).
+
+
+### Where to catch exceptions
+
+Programmers can decide if they want to catch an exception near the failure point, or centralized higher up the call stack. This allows your code to be simplified and standardized. You do not need to handle all types of exceptions at the current point in the call stack.
+
+Sometimes you want to catch an exception, log it, and then rethrow it.\ There are three ways to rethrow an exception inside a catch block:
+1. To throw the caught exception with its original call stack, call `throw`.
+2. To throw the caught exception as if it was thrown at the current level in the call stack, call `throw` with the caught exception, for example, `throw ex`. This is usually poor practice because you have lost some potentially useful information for debugging.
+3. To wrap the caught exception in another exception that can include more information in a message that might help the caller understand the problem, throw a new exception and pass the caught exception as the `innerException` parameter.
+
+If an error could occur when we call the `Gamma` function then we could catch the exception and then perform one of the three techniques of rethrowing an exception:
+```csharp
+try
+{
+  Gamma();
+}
+catch (IOException ex)
+{
+  LogException(ex);
+
+  // First way.
+  throw;
+
+  // Second way.
+  throw ex;
+  
+  // Third way.
+  throw new InvalidOperationException(
+    message: "Calculation had invalid values. See inner exception for why.",
+    innerException: ex);
+}
+```
+
+
+### Implementing the tester-doer pattern
+
+The _tester-doer pattern_ can avoid some thrown exceptions (but not eliminate them completely). This pattern uses pairs of functions: one to perform a test, the other to perform an action that would fail if the test is not passed.
+
+.NET implements this pattern itself. For example, before adding an item to a collection by calling the `Add` method, you can test to see if it is read-only, which would cause `Add` to fail and therefore throw an exception.
+
+For example, before withdrawing money from a bank account, you might test that the account is not overdrawn:
+```csharp
+if (!bankAccount.IsOverdrawn())
+{
+  bankAccount.Withdraw(amount);
+}
+```
+
+
+### Problems with the tester-doer pattern
+
+The tester-doer pattern can add performance overhead, so you can also implement the try pattern, which in effect combines the test and do parts into a single function, as we saw with `TryParse`.
+
+Another problem with the tester-doer pattern occurs when you are using multiple threads. In this scenario, one thread could call the test function and it returns okay. But then another thread executes that changes the state. Then the original thread continues executing assuming everything is fine, but it is not fine.
+
+If you implement your own try pattern function and it fails, remember to set the `out` parameter to the default value of its type and then `return false`:
+```csharp
+static bool TryParse(string? input, out Person value)
+{
+  if (someFailure)
+  {
+    value = default(Person);
+    return false;
+  }
+
+  value = new Person() { ... };
+  return true;
+}
+```
 
 
 
