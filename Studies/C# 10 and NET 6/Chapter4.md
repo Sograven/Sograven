@@ -536,6 +536,54 @@ static bool TryParse(string? input, out Person value)
 
 ### Exercise 4.1
 
+#### What does the C# keyword void mean?
+
+The `void` keyword means that a type doesn’t return a value.
+
+#### What are some differences between imperative and functional programming styles?
+
+The difference is that functional programming consists of lambda expressions and looks like mathematical functions whereas imperative programming consists of statements and looks like recipe.
+
+#### In Visual Studio Code or Visual Studio, what is the difference between pressing F5, Ctrl or Cmd + F5, Shift + F5, and Ctrl or Cmd + Shift + F5?
+
+The difference is that _F5_ runs a program with debugging whereas _Ctrl + F5_ runs a program without debugging.
+
+#### Where does the Trace.WriteLine method write its output to?
+
+`Trace.WriteLine` method writes output in debugging console.
+
+#### What are the five trace levels?
+
+Trace levels control what will be written in output:
+- (0) Off
+- (1) Error
+- (2) Warning
+- (3) Info
+- (4) Verbose
+
+#### What is the difference between the Debug and Trace classes?
+
+The difference is that `Debug` class works only in development whereas `Trace` class works both in development and runtime.
+
+#### When writing a unit test, what are the three "A"s?
+
+Three 'A' stand of three words: 
+- Arrange
+- Act
+- Assert
+
+#### When writing a unit test using xUnit, what attribute must you decorate the test methods with?
+
+`[Fact]`
+
+#### What dotnet command executes xUnit tests?
+
+`dotnet test`
+
+#### What statement should you use to rethrow a caught exception named ex without losing the stack trace?
+
+`throw;`
+
 
 
 ### Exercise 4.2
