@@ -372,6 +372,7 @@ Some developers even follow the principle that programmers should create unit te
 
 # Understanding types of testing
 | Type of testing | Description                                                                                                                                                                                                 |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Unit            | Tests the smallest unit of code, typically a method or function.                                                                                                                                            |
 |                 | Unit testing is performed on a unit of code isolated from its dependencies by mocking them if needed.                                                                                                       |
 |                 | Each unit should have multiple tests: some with typical inputs and expected outputs, some with extreme input values to test boundaries, and some with deliberately wrong inputs to test exception handling. |
