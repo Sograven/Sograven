@@ -14,6 +14,9 @@
   - [Configuring trace listeners](#configuring-trace-listeners)
   - [Switching trace levels](#switching-trace-levels)
 - [Unit testing](#unit-testing)
+  - [Understanding types of testing](#understanding-types-of-testing)
+  - [Creating a class library that needs testing](#creating-a-class-library-that-needs-testing)
+  - [Writing unit tests](#writing-unit-tests)
 - [Throwing and catching exceptions in functions](#throwing-and-catching-exceptions-in-functions)
   - [Understanding usage errors and execution errors](#understanding-usage-errors-and-execution-errors)
   - [Commonly thrown exceptions in functions](#commonly-thrown-exceptions-in-functions)
@@ -364,6 +367,85 @@ Trace.WriteLineIf(ts.TraceVerbose, "Trace verbose");
 
 ## Unit testing
 
+_Unit testing_ is a good way to find bugs early in the development process.  
+Some developers even follow the principle that programmers should create unit tests before they write code, and this is called _Test-Driven Development (**TDD**)_.
+
+# Understanding types of testing
+| Type of testing | Description                                                                                                                                                                                                 |
+| Unit            | Tests the smallest unit of code, typically a method or function.                                                                                                                                            |
+|                 | Unit testing is performed on a unit of code isolated from its dependencies by mocking them if needed.                                                                                                       |
+|                 | Each unit should have multiple tests: some with typical inputs and expected outputs, some with extreme input values to test boundaries, and some with deliberately wrong inputs to test exception handling. |
+| Integration     | Tests if the smaller units and larger components work together as a single piece of software.                                                                                                               |
+|                 | Sometimes involves integrating with external components that you do not have source code for.                                                                                                               |
+| System          | Tests the whole system environment in which your software will run.                                                                                                                                         |
+| Perfomance      | Tests the performance of your software; for example, your code must return a web page full of data to a visitor in under 20 milliseconds.                                                                   |
+| Load            | Tests how many requests your software can handle simultaneously while maintaining required performance, for example, 10,000 concurrent visitors to a website.                                               |
+| User Acceptance | Tests if users can happily complete their work using your software.                                                                                                                                         |
+
+# Creating a class library that needs testing
+
+```csharp
+namespace Packt
+{
+  public class Calculator
+  {
+    public double Add(double a, double b)
+    {
+        return a * b;
+    }
+  } 
+}
+```
+
+# Writing unit tests
+
+A well-written unit test will have three parts:
+- Arrange: This part will declare and instantiate variables for input and output.
+- Act: This part will execute the unit that you are testing. In our case, that means calling the method that we want to test.
+- Assert: This part will make one or more assertions about the output. An assertion is a belief that, if not true, indicates a failed test. For example, when adding 2 and 2, we would expect the result to be 4.
+
+```csharp
+using Packt;
+using Xunit;
+namespace CalculatorLibUnitTests
+{
+  public class CalculatorUnitTests
+  {
+
+    [Fact]
+    public void TestAdding2And2()
+    {
+      // arrange
+      double a = 2;
+      double b = 2;
+      double expected = 4;
+      Calculator calc = new();
+
+      // act
+      double actual = calc.Add(a, b);
+
+      // assert
+      Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void TestAdding2And3()
+    {
+      // arrange
+      double a = 2;
+      double b = 3;
+      double expected = 5;
+      Calculator calc = new();
+
+      // act
+      double actual = calc.Add(a, b);
+
+      // assert
+      Assert.Equal(expected, actual);
+    }
+  } 
+}
+```
 
 
 
