@@ -670,3 +670,159 @@ Three 'A' stand of three words:
 
 
 ### Exercise 4.2
+
+Class library:
+```csharp
+namespace PrimeFactorsLib
+{
+    public class PrimeFactors
+    {
+        public string GetPrimeFactors(int number)
+        {
+            if (number > 1000) return "Number must be in the range from 1 to 1000.";
+
+            string primeFactors = string.Empty;
+
+            int lastFactor = 2;
+            while (true)
+            {
+                if (number % lastFactor != 0)
+                {
+                    lastFactor++;
+                    continue;
+                }
+                else if (number / lastFactor == 1)
+                {
+                    primeFactors += $"{lastFactor}";
+                    break;
+                }
+
+                primeFactors += $"{lastFactor} x ";
+                number /= lastFactor;
+            }
+
+            return primeFactors;
+        }
+    }
+}
+```
+
+
+Unit tests:
+```csharp
+using PrimeFactorsLib;
+
+namespace PrimeFactorsUnitTests
+{
+    public class PrimeFactorsUnitTests
+    {
+        [Fact]
+        public void GetPrimeFactorsOf4()
+        {
+            // Arrange.
+            int number = 4;
+            string expected = "2 x 2";
+            PrimeFactors primeFactors = new();
+
+            // Act.
+            string actual = primeFactors.GetPrimeFactors(number);
+
+            // Assert.
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetPrimeFactorsOf7()
+        {
+            // Arrange.
+            int number = 7;
+            string expected = "7";
+            PrimeFactors primeFactors = new();
+
+            // Act.
+            string actual = primeFactors.GetPrimeFactors(number);
+
+            // Assert.
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetPrimeFactorsOf30()
+        {
+            // Arrange.
+            int number = 30;
+            string expected = "2 x 3 x 5";
+            PrimeFactors primeFactors = new();
+
+            // Act.
+            string actual = primeFactors.GetPrimeFactors(number);
+
+            // Assert.
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetPrimeFactorsOf40()
+        {
+            // Arrange.
+            int number = 40;
+            string expected = "2 x 2 x 2 x 5";
+            PrimeFactors primeFactors = new();
+
+            // Act.
+            string actual = primeFactors.GetPrimeFactors(number);
+
+            // Assert.
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetPrimeFactorsOf50()
+        {
+            // Arrange.
+            int number = 50;
+            string expected = "2 x 5 x 5";
+            PrimeFactors primeFactors = new();
+
+            // Act.
+            string actual = primeFactors.GetPrimeFactors(number);
+
+            // Assert.
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetPrimeFactorsOf1001()
+        {
+            // Arrange.
+            int number = 1001;
+            string expected = "Number must be in the range from 1 to 1000.";
+            PrimeFactors primeFactors = new();
+
+            // Act.
+            string actual = primeFactors.GetPrimeFactors(number);
+
+            // Assert.
+            Assert.Equal(expected, actual);
+        }
+    }
+}
+```
+
+App:
+```csharp
+using PrimeFactorsLib;
+
+namespace RunPrimeFactors
+{
+    internal class RunPrimeFactors
+    {
+        static void Main(string[] args)
+        {
+            PrimeFactors primeFactors = new();
+            var output = primeFactors.GetPrimeFactors(50);
+            Console.WriteLine(output);
+        }
+    }
+}
+```
